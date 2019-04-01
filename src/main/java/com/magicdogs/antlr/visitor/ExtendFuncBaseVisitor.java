@@ -5,6 +5,7 @@ import com.magicdogs.antlr.parser.FuncParser;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
@@ -22,6 +23,23 @@ public class ExtendFuncBaseVisitor extends FuncBaseVisitor<String> {
     private int INDEX = 1;
     private String RET = "result";
 
+    private boolean parseError;
+    private String result;
+
+    public boolean isParseError() {
+        return parseError;
+    }
+
+
+    public String getResult() {
+        return result;
+    }
+
+    @Override
+    public String visitErrorNode(ErrorNode node) {
+        this.parseError = true;
+        return super.visitErrorNode(node);
+    }
 
     @Override
     public String visitStat_block(FuncParser.Stat_blockContext ctx) {
@@ -80,7 +98,7 @@ public class ExtendFuncBaseVisitor extends FuncBaseVisitor<String> {
         conditionMap.forEach((condKey,condVal)->{
             statBlockMap.forEach((statKey,statVal)->{
                 if(condKey.equals(statKey)){
-                    System.out.println(statKey + ", " + condVal.depth() + " , " + statVal.depth());
+                    /*System.out.println(statKey + ", " + condVal.depth() + " , " + statVal.depth());*/
                     if(condVal.depth() <= statVal.depth()){
                         fixDepthLevelLikeNodes(condVal, statKey, statVal);
                     }else{
@@ -89,7 +107,8 @@ public class ExtendFuncBaseVisitor extends FuncBaseVisitor<String> {
                 }
             });
         });
-        System.out.println(ctx.getText());
+        /*System.out.println(ctx.getText());*/
+        this.result = ctx.getText();
         return result;
     }
 
